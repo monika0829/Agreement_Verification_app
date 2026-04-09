@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ agreement.agreement_number }} - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>{{ agreement.agreement_number }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'agreements:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'agreements:agreement_list' %}">Agreements</a></li>
+                <li class="breadcrumb-item active">{{ agreement.agreement_number }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <div class="btn-group" role="group">
+            {% if agreement.status == 'DRAFT' or agreement.status == 'PENDING_APPROVAL' %}
+            <a href="{% url 'agreements:agreement_update' agreement.pk %}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            {% endif %}
+            <a href="{% url 'agreements:rate_create' agreement.pk %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Add Rate
+            </a>
+            <a href="{% url 'agreements:agreement_change_status' agreement.pk %}" class="btn btn-info text-white">
+                <i class="bi bi-arrow-repeat"></i> Change Status
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Status Banner -->
+{% if agreement.status == 'PENDING_APPROVAL' %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> <strong>Waiting for approval</strong> - This agreement is pending review.
+</div>
+{% elif agreement.status == 'ACTIVE' %}
+<div class="alert alert-success">
+    <i class="bi bi-check-circle"></i> <strong>Active Agreement</strong> - This agreement is currently active.
+    {% if days_until_expiry and days_until_expiry <= 30 %}
+    <span class="ms-2"><i class="bi bi-clock"></i> Expires in {{ days_until_expiry }} days</span>
+    {% endif %}
+</div>
+{% elif agreement.status == 'EXPIRED' %}
+<div class="alert alert-danger">
+    <i class="bi bi-x-circle"></i> <strong>Expired Agreement</strong> - This agreement has expired.
+</div>
+{% endif %}
+
+<!-- Agreement Details -->
+<div class="row mb-4">
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-text me-2"></i>Agreement Details
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Agreement Number</small>
+                        <p class="mb-0"><strong>{{ agreement.agreement_number }}</strong></p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Status</small>
+                        <p class="mb-0"><span class="badge badge-status badge-{{ agreement.status|lower }}">{{ agreement.status }}</span></p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Vendor</small>
+                        <p class="mb-0"><a href="{% url 'agreements:vendor_detail' agreement.vendor.pk %}">{{ agreement.vendor.name }}</a></p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Type</small>
+                        <p class="mb-0">{{ agreement.get_agreement_type_display }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Title</small>
+                    <p class="mb-0"><strong>{{ agreement.title }}</strong></p>
+                </div>
+
+                {% if agreement.description %}
+                <div class="mb-3">
+                    <small class="text-muted">Description</small>
+                    <p class="mb-0">{{ agreement.description }}</p>
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Start Date</small>
+                        <p class="mb-0"><i class="bi bi-calendar"></i> {{ agreement.agreement_start_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">End Date</small>
+                        <p class="mb-0"><i class="bi bi-calendar-check"></i> {{ agreement.agreement_end_date|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+
+                {% if days_until_expiry %}
+                <div class="mb-3">
+                    {% if days_until_expiry > 30 %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Agreement expires in <strong>{{ days_until_expiry }} days</strong>
+                    </div>
+                    {% elif days_until_expiry > 0 %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Agreement expires soon - <strong>{{ days_until_expiry }} days</strong> remaining
+                    </div>
+                    {% else %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-x-circle"></i> Agreement has expired
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Currency</small>
+                        <p class="mb-0">{{ agreement.currency }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Payment Terms</small>
+                        <p class="mb-0">{{ agreement.payment_terms }}</p>
+                    </div>
+                </div>
+
+                {% if agreement.estimated_annual_value %}
+                <div class="mb-3">
+                    <small class="text-muted">Estimated Annual Value</small>
+                    <p class="mb-0"><strong>{{ agreement.currency }} {{ agreement.estimated_annual_value }}</strong></p>
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Account Manager</small>
+                        <p class="mb-0">{{ agreement.account_manager.email|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Created</small>
+                        <p class="mb-0">{{ agreement.created_at|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+
+                {% if agreement.agreement_document %}
+                <div class="mb-3">
+                    <small class="text-muted">Agreement Document</small>
+                    <p class="mb-0">
+                        <a href="{{ agreement.agreement_document.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-file-earmark-pdf"></i> View Document
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-bar-chart me-2"></i>Statistics
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted">Total Rates</small>
+                            <h4 class="mb-0">{{ total_rates }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted">Active Rates</small>
+                            <h4 class="mb-0 text-success">{{ active_rates }}</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-light rounded text-center mb-3">
+                    <small class="text-muted">Invoices</small>
+                    <h4 class="mb-0 text-info">{{ total_invoices_count }}</h4>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'agreements:invoice_create' %}?agreement={{ agreement.pk }}" class="btn btn-outline-primary">
+                        <i class="bi bi-upload"></i> Upload Invoice
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rate Configurations -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-currency-dollar me-2"></i>Rate Configurations</span>
+        <a href="{% url 'agreements:rate_create' agreement.pk %}" class="btn btn-sm btn-success">
+            <i class="bi bi-plus-circle"></i> Add Rate
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Rate Code</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Rate</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Tolerance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rate in rates %}
+                    <tr>
+                        <td><strong>{{ rate.rate_code }}</strong></td>
+                        <td>{{ rate.rate_name }}</td>
+                        <td>{{ rate.get_rate_type_display }}</td>
+                        <td><strong>{{ rate.currency }} {{ rate.rate }}</strong></td>
+                        <td>{{ rate.origin|default:"-" }}</td>
+                        <td>{{ rate.destination|default:"-" }}</td>
+                        <td>{{ rate.tolerance_percentage }}%</td>
+                        <td>
+                            {% if rate.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'agreements:rate_update' rate.pk %}"
+                                   class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'agreements:rate_delete' rate.pk %}"
+                                   class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-4">
+                            <i class="bi bi-currency-dollar text-muted"></i>
+                            <p class="text-muted mb-0">No rate configurations yet</p>
+                            <a href="{% url 'agreements:rate_create' agreement.pk %}" class="btn btn-sm btn-primary mt-2">
+                                <i class="bi bi-plus-circle"></i> Add First Rate
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Related Invoices -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-receipt me-2"></i>Related Invoices</span>
+        <a href="{% url 'agreements:invoice_create' %}?agreement={{ agreement.pk }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-upload"></i> Upload Invoice
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Vendor</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td><a href="{% url 'agreements:invoice_detail' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
+                        <td>{{ invoice.vendor.name }}</td>
+                        <td>{{ invoice.invoice_date|date:"M d, Y" }}</td>
+                        <td>{{ invoice.currency }} {{ invoice.total_amount }}</td>
+                        <td><span class="badge badge-status badge-{{ invoice.status|lower }}">{{ invoice.status }}</span></td>
+                        <td>
+                            <a href="{% url 'agreements:invoice_detail' invoice.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="bi bi-receipt text-muted"></i>
+                            <p class="text-muted mb-0">No invoices yet</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

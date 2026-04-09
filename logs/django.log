@@ -1,0 +1,179 @@
+INFO 2026-02-17 10:09:25,087 autoreload Watching for file changes with StatReloader
+ERROR 2026-02-17 10:09:41,729 log Internal Server Error: /api/schema/
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 416, in initial
+    self.check_throttles(request)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 358, in check_throttles
+    for throttle in self.get_throttles():
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in get_throttles
+    return [throttle() for throttle in self.throttle_classes]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in <listcomp>
+    return [throttle() for throttle in self.throttle_classes]
+            ^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 71, in __init__
+    self.num_requests, self.duration = self.parse_rate(self.rate)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 104, in parse_rate
+    num, period = rate.split('/')
+    ^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+INFO 2026-02-17 10:10:13,210 autoreload /workspace/agreement_verification/config/settings.py changed, reloading.
+INFO 2026-02-17 10:10:13,738 autoreload Watching for file changes with StatReloader
+INFO 2026-02-17 10:10:45,538 autoreload Watching for file changes with StatReloader
+ERROR 2026-02-17 10:10:53,781 log Internal Server Error: /api/schema/
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 416, in initial
+    self.check_throttles(request)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 358, in check_throttles
+    for throttle in self.get_throttles():
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in get_throttles
+    return [throttle() for throttle in self.throttle_classes]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in <listcomp>
+    return [throttle() for throttle in self.throttle_classes]
+            ^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 71, in __init__
+    self.num_requests, self.duration = self.parse_rate(self.rate)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 106, in parse_rate
+    duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: '1'
+ERROR 2026-02-17 10:11:02,479 log Internal Server Error: /api/v1/auth/login/
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 416, in initial
+    self.check_throttles(request)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 358, in check_throttles
+    for throttle in self.get_throttles():
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in get_throttles
+    return [throttle() for throttle in self.throttle_classes]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in <listcomp>
+    return [throttle() for throttle in self.throttle_classes]
+            ^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 71, in __init__
+    self.num_requests, self.duration = self.parse_rate(self.rate)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 106, in parse_rate
+    duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: '1'
+INFO 2026-02-17 10:11:36,380 autoreload /workspace/agreement_verification/config/urls.py changed, reloading.
+INFO 2026-02-17 10:11:36,980 autoreload Watching for file changes with StatReloader
+INFO 2026-02-17 10:11:38,574 autoreload Watching for file changes with StatReloader
+WARNING 2026-02-17 10:11:40,543 log Unauthorized: /api/v1/users/
+WARNING 2026-02-17 10:11:47,630 log Not Found: /
+WARNING 2026-02-17 10:11:47,961 log Not Found: /favicon.ico
+WARNING 2026-02-17 10:11:50,183 log Not Found: /api/v1/auth/login/
+INFO 2026-02-17 10:11:57,427 autoreload /workspace/agreement_verification/config/urls.py changed, reloading.
+INFO 2026-02-17 10:11:58,143 autoreload Watching for file changes with StatReloader
+INFO 2026-02-17 10:11:59,575 autoreload Watching for file changes with StatReloader
+ERROR 2026-02-17 10:12:02,008 log Internal Server Error: /api/v1/auth/login/
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 416, in initial
+    self.check_throttles(request)
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 358, in check_throttles
+    for throttle in self.get_throttles():
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in get_throttles
+    return [throttle() for throttle in self.throttle_classes]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/views.py", line 284, in <listcomp>
+    return [throttle() for throttle in self.throttle_classes]
+            ^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 71, in __init__
+    self.num_requests, self.duration = self.parse_rate(self.rate)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/rest_framework/throttling.py", line 106, in parse_rate
+    duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: '1'
+INFO 2026-02-17 10:12:24,557 autoreload /workspace/agreement_verification/config/settings.py changed, reloading.

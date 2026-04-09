@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ invoice.invoice_number }} - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>{{ invoice.invoice_number }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'agreements:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'agreements:invoice_list' %}">Invoices</a></li>
+                <li class="breadcrumb-item active">{{ invoice.invoice_number }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <div class="btn-group" role="group">
+            {% if invoice.status == 'PENDING' %}
+            <a href="{% url 'agreements:invoice_verify' invoice.pk %}" class="btn btn-warning">
+                <i class="bi bi-check-square"></i> Verify
+            </a>
+            {% elif invoice.status == 'VERIFIED' %}
+            <a href="{% url 'agreements:invoice_approve' invoice.pk %}" class="btn btn-success">
+                <i class="bi bi-check-circle"></i> Approve
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Status Banner -->
+{% if invoice.status == 'PENDING' %}
+<div class="alert alert-warning">
+    <i class="bi bi-clock"></i> <strong>Pending Verification</strong> - This invoice is awaiting verification.
+</div>
+{% elif invoice.status == 'VERIFIED' %}
+<div class="alert alert-info">
+    <i class="bi bi-check-square"></i> <strong>Verified</strong> - This invoice has been verified and is ready for approval.
+</div>
+{% elif invoice.status == 'APPROVED' %}
+<div class="alert alert-success">
+    <i class="bi bi-check-circle"></i> <strong>Approved</strong> - This invoice has been approved.
+</div>
+{% elif invoice.status == 'REJECTED' %}
+<div class="alert alert-danger">
+    <i class="bi bi-x-circle"></i> <strong>Rejected</strong> - {{ invoice.rejection_reason|default:"This invoice has been rejected." }}
+</div>
+{% endif %}
+
+<!-- Invoice Details -->
+<div class="row mb-4">
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-receipt me-2"></i>Invoice Details
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Invoice Number</small>
+                        <p class="mb-0"><strong>{{ invoice.invoice_number }}</strong></p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Status</small>
+                        <p class="mb-0"><span class="badge badge-status badge-{{ invoice.status|lower }}">{{ invoice.status }}</span></p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Vendor</small>
+                        <p class="mb-0"><a href="{% url 'agreements:vendor_detail' invoice.vendor.pk %}">{{ invoice.vendor.name }}</a></p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Agreement</small>
+                        <p class="mb-0">
+                            {% if invoice.agreement %}
+                            <a href="{% url 'agreements:agreement_detail' invoice.agreement.pk %}">{{ invoice.agreement.agreement_number }}</a>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Invoice Date</small>
+                        <p class="mb-0"><i class="bi bi-calendar"></i> {{ invoice.invoice_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Due Date</small>
+                        <p class="mb-0"><i class="bi bi-calendar-check"></i> {{ invoice.due_date|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">Subtotal</small>
+                        <p class="mb-0">{{ invoice.currency }} {{ invoice.subtotal_amount }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Tax</small>
+                        <p class="mb-0">{{ invoice.currency }} {{ invoice.tax_amount }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Total</small>
+                        <p class="mb-0"><strong>{{ invoice.currency }} {{ invoice.total_amount }}</strong></p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Amount Paid</small>
+                        <p class="mb-0">{{ invoice.currency }} {{ invoice.amount_paid }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Balance Due</small>
+                        <p class="mb-0"><strong class="text-primary">{{ invoice.currency }} {{ invoice.balance_due }}</strong></p>
+                    </div>
+                </div>
+
+                {% if invoice.invoice_file %}
+                <div class="mb-3">
+                    <small class="text-muted">Invoice File</small>
+                    <p class="mb-0">
+                        <a href="{{ invoice.invoice_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-file-earmark"></i> View Invoice File
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+
+                {% if invoice.verification_notes %}
+                <div class="mb-3">
+                    <small class="text-muted">Verification Notes</small>
+                    <p class="mb-0">{{ invoice.verification_notes }}</p>
+                </div>
+                {% endif %}
+
+                {% if invoice.rejection_reason %}
+                <div class="mb-3">
+                    <small class="text-muted">Rejection Reason</small>
+                    <p class="mb-0 text-danger">{{ invoice.rejection_reason }}</p>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">Verified By</small>
+                        <p class="mb-0">{{ invoice.verified_by.email|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Approved By</small>
+                        <p class="mb-0">{{ invoice.approved_by.email|default:"-" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle me-2"></i>Discrepancies
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted">Total</small>
+                                <h4 class="mb-0">{{ total_discrepancies }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted">Open</small>
+                                <h4 class="mb-0 text-danger">{{ unresolved_discrepancies }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Discrepancies -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-exclamation-triangle me-2"></i>Discrepancies ({{ total_discrepancies }})
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Expected</th>
+                        <th>Actual</th>
+                        <th>Difference</th>
+                        <th>Financial Impact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for discrepancy in discrepancies %}
+                    <tr>
+                        <td><span class="badge bg-secondary">{{ discrepancy.get_discrepancy_type_display }}</span></td>
+                        <td>{{ discrepancy.description }}</td>
+                        <td>{{ discrepancy.expected_value|default:"-" }}</td>
+                        <td>{{ discrepancy.actual_value|default:"-" }}</td>
+                        <td>
+                            <span class="{% if discrepancy.difference_percentage > 0 %}text-danger{% else %}text-success{% endif %}">
+                                {{ discrepancy.difference_percentage }}%
+                            </span>
+                        </td>
+                        <td><strong>{{ discrepancy.currency }} {{ discrepancy.financial_impact }}</strong></td>
+                        <td>
+                            {% if discrepancy.is_resolved %}
+                            <span class="badge bg-success">Resolved</span>
+                            {% else %}
+                            <span class="badge bg-warning">Open</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not discrepancy.is_resolved %}
+                            <a href="{% url 'agreements:discrepancy_resolve' discrepancy.pk %}"
+                               class="btn btn-sm btn-outline-primary">Resolve</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <p class="text-muted mb-0">No discrepancies found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Verification Requests -->
+{% if verification_requests %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-check-square me-2"></i>Verification History
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Reference #</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                        <th>Checks</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vr in verification_requests %}
+                    <tr>
+                        <td>{{ vr.reference_number }}</td>
+                        <td><span class="badge bg-info">{{ vr.status }}</span></td>
+                        <td><span class="badge bg-secondary">{{ vr.result }}</span></td>
+                        <td>{{ vr.passed_checks }}/{{ vr.total_checks }} passed</td>
+                        <td>{{ vr.created_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

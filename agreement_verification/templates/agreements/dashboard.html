@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>Dashboard</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">Overview</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <span class="text-muted">{{ user.email }}</span>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <div class="quick-action-card" onclick="window.location.href='{% url 'agreements:vendor_create' %}'">
+        <i class="bi bi-plus-circle"></i>
+        <h6>Add Vendor</h6>
+    </div>
+    <div class="quick-action-card" onclick="window.location.href='{% url 'agreements:agreement_create' %}'">
+        <i class="bi bi-file-earmark-plus"></i>
+        <h6>New Agreement</h6>
+    </div>
+    <div class="quick-action-card" onclick="window.location.href='{% url 'agreements:invoice_create' %}'">
+        <i class="bi bi-upload"></i>
+        <h6>Upload Invoice</h6>
+    </div>
+    <div class="quick-action-card" onclick="window.location.href='{% url 'agreements:verification_list' %}'">
+        <i class="bi bi-check2-square"></i>
+        <h6>Verifications</h6>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-label">Total Vendors</div>
+            <div class="stat-value">{{ total_vendors }}</div>
+            <small><i class="bi bi-building"></i> Active partners</small>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card success">
+            <div class="stat-label">Active Agreements</div>
+            <div class="stat-value">{{ active_agreements }}</div>
+            <small><i class="bi bi-file-earmark-text"></i> of {{ total_agreements }} total</small>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card warning">
+            <div class="stat-label">Pending Approvals</div>
+            <div class="stat-value">{{ pending_agreements }}</div>
+            <small><i class="bi bi-clock"></i> awaiting review</small>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card info">
+            <div class="stat-label">Pending Invoices</div>
+            <div class="stat-value">{{ pending_invoices }}
+            </div>
+            <small><i class="bi bi-receipt"></i> of {{ total_invoices }} total</small>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-bar-chart me-2"></i>Agreement Status Distribution
+            </div>
+            <div class="card-body">
+                <canvas id="agreementChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-pie-chart me-2"></i>Invoice Status Distribution
+            </div>
+            <div class="card-body">
+                <canvas id="invoiceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity & Pending Approvals -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history me-2"></i>Recent Agreements</span>
+                <a href="{% url 'agreements:agreement_list' %}" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Agreement #</th>
+                                <th>Vendor</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agreement in recent_agreements %}
+                            <tr>
+                                <td><a href="{% url 'agreements:agreement_detail' agreement.pk %}">{{ agreement.agreement_number }}</a></td>
+                                <td>{{ agreement.vendor.name }}</td>
+                                <td><span class="badge badge-status badge-{{ agreement.status|lower }}">{{ agreement.status }}</span></td>
+                                <td>{{ agreement.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No agreements yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-exclamation-triangle me-2"></i>Pending Approvals</span>
+                {% if pending_approvals %}
+                <a href="{% url 'agreements:agreement_list' %}?status=PENDING_APPROVAL" class="btn btn-sm btn-primary">Review</a>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Agreement #</th>
+                                <th>Vendor</th>
+                                <th>Submitted By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agreement in pending_approvals %}
+                            <tr>
+                                <td><a href="{% url 'agreements:agreement_detail' agreement.pk %}">{{ agreement.agreement_number }}</a></td>
+                                <td>{{ agreement.vendor.name }}</td>
+                                <td>{{ agreement.created_by.email|default:"-" }}</td>
+                                <td>
+                                    <a href="{% url 'agreements:agreement_detail' agreement.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> Review
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    <i class="bi bi-check-circle text-success"></i> No pending approvals
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Invoices & Upcoming Renewals -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-receipt me-2"></i>Recent Invoices</span>
+                <a href="{% url 'agreements:invoice_list' %}" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Vendor</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in recent_invoices %}
+                            <tr>
+                                <td><a href="{% url 'agreements:invoice_detail' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
+                                <td>{{ invoice.vendor.name }}</td>
+                                <td>{{ invoice.currency }} {{ invoice.total_amount }}</td>
+                                <td><span class="badge badge-status badge-{{ invoice.status|lower }}">{{ invoice.status }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No invoices yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-calendar-event me-2"></i>Upcoming Renewals</span>
+                {% if upcoming_renewals %}
+                <a href="{% url 'agreements:agreement_list' %}?status=ACTIVE" class="btn btn-sm btn-primary">View All</a>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Agreement #</th>
+                                <th>Vendor</th>
+                                <th>Expires</th>
+                                <th>Days Left</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agreement in upcoming_renewals %}
+                            <tr>
+                                <td><a href="{% url 'agreements:agreement_detail' agreement.pk %}">{{ agreement.agreement_number }}</a></td>
+                                <td>{{ agreement.vendor.name }}</td>
+                                <td>{{ agreement.agreement_end_date|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if days_until_expiry >= 30 %}
+                                    <span class="badge bg-success">{{ agreement.days_until_expiry }} days</span>
+                                    {% elif days_until_expiry >= 7 %}
+                                    <span class="badge bg-warning text-dark">{{ agreement.days_until_expiry }} days</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">{{ agreement.days_until_expiry }} days</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No upcoming renewals</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Financial Summary -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-currency-dollar me-2"></i>Financial Summary
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <small class="text-muted">Total Invoice Amount</small>
+                            <h3 class="text-primary">${{ total_invoice_amount|floatformat:2 }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <small class="text-muted">Pending Amount</small>
+                            <h3 class="text-warning">${{ pending_invoice_amount|floatformat:2 }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <small class="text-muted">Open Discrepancies</small>
+                            <h3 class="text-danger">{{ open_discrepancies }} / {{ total_discrepancies }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Agreement Status Chart
+const agreementCtx = document.getElementById('agreementChart').getContext('2d');
+new Chart(agreementCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ agreement_status_labels|safe }},
+        datasets: [{
+            data: {{ agreement_status_data|safe }},
+            backgroundColor: ['#10b981', '#f59e0b', '#64748b', '#06b6d4', '#ef4444', '#7c3aed'],
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Invoice Status Chart
+const invoiceCtx = document.getElementById('invoiceChart').getContext('2d');
+new Chart(invoiceCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ invoice_status_labels|safe }},
+        datasets: [{
+            data: {{ invoice_status_data|safe }},
+            backgroundColor: ['#f59e0b', '#06b6d4', '#10b981', '#ef4444', '#64748b'],
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

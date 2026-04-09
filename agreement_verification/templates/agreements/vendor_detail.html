@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ vendor.name }} - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>{{ vendor.name }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'agreements:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'agreements:vendor_list' %}">Vendors</a></li>
+                <li class="breadcrumb-item active">{{ vendor.vendor_code }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{% url 'agreements:vendor_update' vendor.pk %}" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Edit Vendor
+        </a>
+    </div>
+</div>
+
+<!-- Vendor Details Card -->
+<div class="row mb-4">
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-building me-2"></i>Vendor Information
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Vendor Code</small>
+                        <p class="mb-0"><strong>{{ vendor.vendor_code }}</strong></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Status</small>
+                        <p class="mb-0">
+                            {% if vendor.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Email</small>
+                        <p class="mb-0"><a href="mailto:{{ vendor.email }}">{{ vendor.email }}</a></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Phone</small>
+                        <p class="mb-0">{{ vendor.phone }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Address</small>
+                    <p class="mb-0">{{ vendor.address }}</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted">City</small>
+                        <p class="mb-0">{{ vendor.city }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted">State</small>
+                        <p class="mb-0">{{ vendor.state }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted">Country</small>
+                        <p class="mb-0">{{ vendor.country }}</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Tax ID / EIN</small>
+                        <p class="mb-0">{{ vendor.tax_id|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Created</small>
+                        <p class="mb-0">{{ vendor.created_at|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-bar-chart me-2"></i>Statistics
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="stat-card success d-inline-block text-center" style="min-width: 140px;">
+                        <div class="stat-label">Total Agreements</div>
+                        <div class="stat-value">{{ total_agreements }}</div>
+                    </div>
+                </div>
+
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted">Active</small>
+                            <h5 class="mb-0 text-success">{{ active_agreements }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted">Invoices</small>
+                            <h5 class="mb-0 text-info">{{ total_invoices_count }}</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center p-3 bg-light rounded">
+                    <small class="text-muted">Total Invoice Amount</small>
+                    <h4 class="mb-0 text-primary">${{ total_invoice_amount|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{% url 'agreements:agreement_create' %}?vendor={{ vendor.pk }}"
+                           class="btn btn-outline-primary w-100">
+                            <i class="bi bi-file-earmark-plus"></i> New Agreement
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'agreements:invoice_create' %}?vendor={{ vendor.pk }}"
+                           class="btn btn-outline-success w-100">
+                            <i class="bi bi-receipt"></i> Upload Invoice
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'agreements:agreement_list' %}?vendor={{ vendor.pk }}"
+                           class="btn btn-outline-info w-100">
+                            <i class="bi bi-list-ul"></i> View Agreements
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'agreements:invoice_list' %}?vendor={{ vendor.pk }}"
+                           class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-receipt-cutoff"></i> View Invoices
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs" id="vendorTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="agreements-tab" data-bs-toggle="tab" data-bs-target="#agreements"
+                type="button" role="tab">
+            <i class="bi bi-file-earmark-text me-2"></i>Agreements ({{ total_agreements }})
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoices"
+                type="button" role="tab">
+            <i class="bi bi-receipt me-2"></i>Invoices ({{ total_invoices_count }})
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content mt-3" id="vendorTabsContent">
+    <!-- Agreements Tab -->
+    <div class="tab-pane fade show active" id="agreements" role="tabpanel">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Agreement #</th>
+                                <th>Type</th>
+                                <th>Period</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agreement in agreements %}
+                            <tr>
+                                <td><a href="{% url 'agreements:agreement_detail' agreement.pk %}">{{ agreement.agreement_number }}</a></td>
+                                <td>{{ agreement.get_agreement_type_display }}</td>
+                                <td>{{ agreement.agreement_start_date|date:"M d, Y" }} - {{ agreement.agreement_end_date|date:"M d, Y" }}</td>
+                                <td><span class="badge badge-status badge-{{ agreement.status|lower }}">{{ agreement.status }}</span></td>
+                                <td>
+                                    <a href="{% url 'agreements:agreement_detail' agreement.pk %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="bi bi-file-earmark"></i> No agreements found
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoices Tab -->
+    <div class="tab-pane fade" id="invoices" role="tabpanel">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                            <tr>
+                                <td><a href="{% url 'agreements:invoice_detail' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
+                                <td>{{ invoice.invoice_date|date:"M d, Y" }}</td>
+                                <td>{{ invoice.currency }} {{ invoice.total_amount }}</td>
+                                <td><span class="badge badge-status badge-{{ invoice.status|lower }}">{{ invoice.status }}</span></td>
+                                <td>
+                                    <a href="{% url 'agreements:invoice_detail' invoice.pk %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="bi bi-receipt"></i> No invoices found
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

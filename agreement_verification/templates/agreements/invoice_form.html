@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Invoice - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>Upload Invoice</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'agreements:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'agreements:invoice_list' %}">Invoices</a></li>
+                <li class="breadcrumb-item active">Upload</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Upload Card -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-upload me-2"></i>Upload New Invoice
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Invoice Number <span class="text-danger">*</span></label>
+                        {{ form.invoice_number }}
+                        {% if form.invoice_number.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.invoice_number.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Vendor <span class="text-danger">*</span></label>
+                        {{ form.vendor }}
+                        {% if form.vendor.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.vendor.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Agreement</label>
+                {{ form.agreement }}
+                {% if form.agreement.errors %}
+                <div class="text-danger small mt-1">{% for error in form.agreement.errors %}{{ error }}{% endfor %}</div>
+                {% endif %}
+                <small class="text-muted">Select the associated agreement if applicable</small>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Invoice Date <span class="text-danger">*</span></label>
+                        {{ form.invoice_date }}
+                        {% if form.invoice_date.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.invoice_date.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Due Date <span class="text-danger">*</span></label>
+                        {{ form.due_date }}
+                        {% if form.due_date.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.due_date.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Currency <span class="text-danger">*</span></label>
+                        {{ form.currency }}
+                        {% if form.currency.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.currency.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Subtotal Amount <span class="text-danger">*</span></label>
+                        {{ form.subtotal_amount }}
+                        {% if form.subtotal_amount.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.subtotal_amount.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Tax Amount</label>
+                        {{ form.tax_amount }}
+                        {% if form.tax_amount.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.tax_amount.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Total Amount <span class="text-danger">*</span></label>
+                        {{ form.total_amount }}
+                        {% if form.total_amount.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.total_amount.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Invoice File <span class="text-danger">*</span></label>
+                <div class="file-upload-wrapper">
+                    <i class="bi bi-cloud-upload fs-1 text-muted"></i>
+                    <p class="mb-2 mt-2">Drag & drop or click to upload</p>
+                    {{ form.invoice_file }}
+                    {% if form.invoice_file.errors %}
+                    <div class="text-danger small mt-1">{% for error in form.invoice_file.errors %}{{ error }}{% endfor %}</div>
+                    {% endif %}
+                    <small class="text-muted">PDF, Excel, or Image (Max 10MB)</small>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between pt-3 border-top">
+                <a href="{% url 'agreements:invoice_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload"></i> Upload Invoice
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

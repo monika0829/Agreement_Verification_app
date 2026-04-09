@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Invoices - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>Invoices</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'agreements:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Invoices</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{% url 'agreements:invoice_create' %}" class="btn btn-primary">
+            <i class="bi bi-upload"></i> Upload Invoice
+        </a>
+    </div>
+</div>
+
+<!-- Filters Card -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Invoice #, vendor..."
+                       value="{{ search_query }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All</option>
+                    <option value="PENDING" {% if status_filter == 'PENDING' %}selected{% endif %}>Pending</option>
+                    <option value="VERIFIED" {% if status_filter == 'VERIFIED' %}selected{% endif %}>Verified</option>
+                    <option value="APPROVED" {% if status_filter == 'APPROVED' %}selected{% endif %}>Approved</option>
+                    <option value="REJECTED" {% if status_filter == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Vendor</label>
+                <select name="vendor" class="form-select">
+                    <option value="">All Vendors</option>
+                    {% for vendor in vendors %}
+                    <option value="{{ vendor.pk }}" {% if vendor_filter == vendor.pk|stringformat:"s" %}selected{% endif %}>{{ vendor.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Invoices Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-receipt me-2"></i>All Invoices</span>
+        <span class="badge bg-primary">{{ page_obj.paginator.count }} total</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Vendor</th>
+                        <th>Date</th>
+                        <th>Due Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in page_obj %}
+                    <tr>
+                        <td><strong>{{ invoice.invoice_number }}</strong></td>
+                        <td>{{ invoice.vendor.name }}</td>
+                        <td>{{ invoice.invoice_date|date:"M d, Y" }}</td>
+                        <td>{{ invoice.due_date|date:"M d, Y" }}</td>
+                        <td><strong>{{ invoice.currency }} {{ invoice.total_amount }}</strong></td>
+                        <td><span class="badge badge-status badge-{{ invoice.status|lower }}">{{ invoice.status }}</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'agreements:invoice_detail' invoice.pk %}"
+                                   class="btn btn-sm btn-outline-primary" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if invoice.status == 'PENDING' %}
+                                <a href="{% url 'agreements:invoice_verify' invoice.pk %}"
+                                   class="btn btn-sm btn-outline-warning" title="Verify">
+                                    <i class="bi bi-check-square"></i>
+                                </a>
+                                {% elif invoice.status == 'VERIFIED' %}
+                                <a href="{% url 'agreements:invoice_approve' invoice.pk %}"
+                                   class="btn btn-sm btn-outline-success" title="Approve">
+                                    <i class="bi bi-check-circle"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="bi bi-receipt fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">No invoices found</p>
+                            <a href="{% url 'agreements:invoice_create' %}" class="btn btn-primary">
+                                <i class="bi bi-upload"></i> Upload First Invoice
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer">
+        <nav>
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&status={{ status_filter }}&vendor={{ vendor_filter }}"><i class="bi bi-chevron-left"></i></a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&status={{ status_filter }}&vendor={{ vendor_filter }}"><i class="bi bi-chevron-right"></i></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

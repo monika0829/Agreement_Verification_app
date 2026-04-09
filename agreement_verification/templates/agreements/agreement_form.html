@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if agreement %}Edit Agreement{% else %}Create Agreement{% endif %} - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>{% if agreement %}Edit Agreement{% else %}Create Agreement{% endif %}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'agreements:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'agreements:agreement_list' %}">Agreements</a></li>
+                <li class="breadcrumb-item active">{% if agreement %}Edit{% else %}Create{% endif %}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-file-earmark-text me-2"></i>{% if agreement %}Edit Agreement{% else %}New Agreement{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Basic Information -->
+            <h5 class="mb-3"><i class="bi bi-info-circle me-2"></i>Basic Information</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Agreement Number <span class="text-danger">*</span></label>
+                        {{ form.agreement_number }}
+                        {% if form.agreement_number.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.agreement_number.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Agreement Type <span class="text-danger">*</span></label>
+                        {{ form.agreement_type }}
+                        {% if form.agreement_type.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.agreement_type.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Vendor <span class="text-danger">*</span></label>
+                        {{ form.vendor }}
+                        {% if form.vendor.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.vendor.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Title <span class="text-danger">*</span></label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.title.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="text-danger small mt-1">{% for error in form.description.errors %}{{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Dates & Terms -->
+            <h5 class="mb-3"><i class="bi bi-calendar-event me-2"></i>Dates & Terms</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                        {{ form.agreement_start_date }}
+                        {% if form.agreement_start_date.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.agreement_start_date.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">End Date <span class="text-danger">*</span></label>
+                        {{ form.agreement_end_date }}
+                        {% if form.agreement_end_date.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.agreement_end_date.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Currency <span class="text-danger">*</span></label>
+                        {{ form.currency }}
+                        {% if form.currency.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.currency.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Estimated Annual Value</label>
+                        {{ form.estimated_annual_value }}
+                        {% if form.estimated_annual_value.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.estimated_annual_value.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Payment Terms <span class="text-danger">*</span></label>
+                        {{ form.payment_terms }}
+                        {% if form.payment_terms.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.payment_terms.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Management & Documents -->
+            <h5 class="mb-3"><i class="bi bi-people me-2"></i>Management & Documents</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Account Manager</label>
+                        {{ form.account_manager }}
+                        {% if form.account_manager.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.account_manager.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                        <small class="text-muted">Person responsible for this agreement</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Agreement Document</label>
+                        {{ form.agreement_document }}
+                        {% if form.agreement_document.errors %}
+                        <div class="text-danger small mt-1">{% for error in form.agreement_document.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                        <small class="text-muted">PDF, DOC, DOCX (Max 10MB)</small>
+                        {% if agreement.agreement_document %}
+                        <div class="mt-2">
+                            <a href="{{ agreement.agreement_document.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-file-earmark-pdf"></i> View Current Document
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                <a href="{% if agreement %}{% url 'agreements:agreement_detail' agreement.pk %}{% else %}{% url 'agreements:agreement_list' %}{% endif %}"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> {% if agreement %}Save Changes{% else %}Create Agreement{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

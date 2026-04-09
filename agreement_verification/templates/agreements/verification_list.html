@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Verifications - Agreement Verification System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1>Verifications</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'agreements:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Verifications</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- My Verifications -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-person-check me-2"></i>Assigned to Me
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Reference #</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                        <th>Priority</th>
+                        <th>Due Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for verification in my_verifications %}
+                    <tr>
+                        <td><strong>{{ verification.reference_number }}</strong></td>
+                        <td>{{ verification.title }}</td>
+                        <td>{{ verification.get_request_type_display }}</td>
+                        <td><span class="badge badge-status badge-{{ verification.status|lower }}">{{ verification.status }}</span></td>
+                        <td><span class="badge bg-secondary">{{ verification.result }}</span></td>
+                        <td>
+                            {% if verification.priority == 'HIGH' %}
+                            <span class="badge bg-danger">High</span>
+                            {% elif verification.priority == 'MEDIUM' %}
+                            <span class="badge bg-warning text-dark">Medium</span>
+                            {% else %}
+                            <span class="badge bg-info">Low</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ verification.due_date|date:"M d, Y"|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'agreements:verification_detail' verification.pk %}"
+                               class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="bi bi-check-circle text-muted"></i>
+                            <p class="text-muted mb-0">No verifications assigned to you</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- All Verifications -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-list-check me-2"></i>All Verification Requests
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Reference #</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                        <th>Assigned To</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for verification in verifications %}
+                    <tr>
+                        <td><strong>{{ verification.reference_number }}</strong></td>
+                        <td>{{ verification.title }}</td>
+                        <td>{{ verification.get_request_type_display }}</td>
+                        <td><span class="badge badge-status badge-{{ verification.status|lower }}">{{ verification.status }}</span></td>
+                        <td><span class="badge bg-secondary">{{ verification.result }}</span></td>
+                        <td>{{ verification.assigned_to.email|default:"Unassigned" }}</td>
+                        <td>{{ verification.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'agreements:verification_detail' verification.pk %}"
+                               class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="bi bi-inbox text-muted"></i>
+                            <p class="text-muted mb-0">No verification requests yet</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
