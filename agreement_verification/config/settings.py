@@ -10,22 +10,17 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 # CSRF Trusted Origins - Required for reverse proxy setups
 # This allows CSRF tokens to work when accessed via the proxy URL
 CSRF_TRUSTED_ORIGINS = [
-    'https://agreement-verification-application-dxknrx.drytis.dev',
-    'http://agreement-verification-application-dxknrx.drytis.dev',
     "https://agreement-verification-app.onrender.com",
-    'https://localhost',
-    'http://localhost',
-    'http://127.0.0.1',
-    'https://127.0.0.1',
+    # "http://localhost:8000",
 ]
 
 # CSRF Cookie Settings
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = True  # Set to True in production with HTTPS
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Session Cookie Settings
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_SECURE = True  # Set to True in production with HTTPS
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 
