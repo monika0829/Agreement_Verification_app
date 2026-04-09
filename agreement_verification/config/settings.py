@@ -12,6 +12,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 CSRF_TRUSTED_ORIGINS = [
     'https://agreement-verification-application-dxknrx.drytis.dev',
     'http://agreement-verification-application-dxknrx.drytis.dev',
+    "https://agreement-verification-app.onrender.com",
     'https://localhost',
     'http://localhost',
     'http://127.0.0.1',
